@@ -7,40 +7,48 @@ package noice.interact.scenes;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import noice.interact.Channel;
 import noice.interact.Inpux;
-import noice.interact.Visu;
 import noice.interact.scenes.functionals.*;
 
 /**
  *
  * @author rash4
  */
-public class Scene<T extends Scene<T>> extends SceneAdapter{
+public abstract class Scene<T extends Scene<T, IN>, IN extends Inpux<IN>> extends SceneAdapter{
     private Scalable scale;
     private Paintable paint;
     private Resizable resize;
     private Updatable update;
-    private Inputz inputs;
-    public Scene(noice.interact.Visu vis){
+    protected IN inputs;
+    public Scene(){
         this.setAdapter(new SceneAdapter());
-        this.inputs = new Inputz(vis);
+        this.inputs = (IN) new Inpux<IN>(){};
     }
-    public Scene(SceneAdapter adapter, noice.interact.Visu vis){
-        this(vis);
+    @SuppressWarnings("LeakingThisInConstructor")
+    public Scene(String title){
+        this();
+        Channel.add(title, this);
+    }
+    public Scene(SceneAdapter adapter){
         this.setAdapter(adapter);
     }
-    
+    public Scene(IN inputs){
+        this.inputs = inputs;
+        this.setAdapter(new SceneAdapter());
+    }
+    public Scene(SceneAdapter adapter, IN inputs){
+        this.setAdapter(adapter);
+        this.inputs = inputs;
+    }
+    @SuppressWarnings("LeakingThisInConstructor")
+    public Scene(String title, SceneAdapter adapter, IN inputs){
+        this(adapter, inputs);
+        Channel.add(title, this);
+    }
     public T self(){return (T)this;}
     
-    public T initialize(){
-        this.inputs.initialize();
-        return this.self();
-    }
-    public void dispose(){
-        this.inputs.dispose();
-        this.inputs = null;
-    }
-    
+    public boolean hasInputs() {return this.inputs != null;}
     public boolean hasScaler() {return this.scale  != null;}
     public boolean hasPainter(){return this.paint  != null;}
     public boolean hasResizer(){return this.resize != null;}
@@ -59,6 +67,10 @@ public class Scene<T extends Scene<T>> extends SceneAdapter{
         this.update.updating(incremental);
     }
     
+    public T setInputs(IN inputs){
+        this.inputs = inputs;
+        return this.self();
+    }
     public T setScaler(Scalable scaler){
         this.scale = scaler;
         return this.self();
@@ -82,12 +94,14 @@ public class Scene<T extends Scene<T>> extends SceneAdapter{
                 .setPainter(adapter::painting)
                 .setUpdater(adapter::updating);
     }
-    protected class Inputz<U extends Inputz<U>> extends Inpux<U>{
-        public Inputz(Visu container) {
-            super(container);
-        }
-        @Override public U initialize() {
-            return this.self();
-        }
+    public final T registerInputs(){
+        if(this.inputs == null)return this.self();
+        this.inputs.register();
+        return this.self();
+    }
+    public final T removeInputs(){
+        if(this.inputs == null)return this.self();
+        this.inputs.removeit();
+        return this.self();
     }
 }
