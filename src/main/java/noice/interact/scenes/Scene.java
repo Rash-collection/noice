@@ -104,4 +104,6 @@ public abstract class Scene<T extends Scene<T, IN>, IN extends Inpux<IN>> extend
         this.inputs.removeit();
         return this.self();
     }
+    public abstract T initialize();
+    public abstract void dispose();
 }
