@@ -5,8 +5,6 @@
 
 package noice.interact;
 
-import noice.interact.Channel;
-
 /**
  *
  * @author rash4
