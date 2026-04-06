@@ -65,6 +65,10 @@ public class Visu {
             super.setResizable(true);
             super.setVisible(true);
         }
+        @Override public void dispose(){
+            Channel.stop();
+            super.dispose();
+        }
     }
     class Pane extends JPanel{
         private Resizable resizing = siz->{};

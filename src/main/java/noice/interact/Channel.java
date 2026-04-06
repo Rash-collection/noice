@@ -23,11 +23,17 @@ public class Channel {
     /**The only CAZA-nova object, frame and panel set as contentPane.*/
     final static Visu CAZA = new Visu(BasicStatics.APP_NAME, 760, 600);
     
-    final static Loop LOOP = new Loop();
+    private final static Loop LOOP = new Loop();
     
     final static java.util.Map<String, Scene<?,?>> SCENES = new HashMap<>();
     
     private static Scene<?,?> currentScene;
+    
+    public static void stop(){LOOP.stops();}
+    public static void start(){LOOP.start();}
+    public static void toggle(){LOOP.toggle();}
+    // tempo method!!
+    public final static java.awt.Dimension size(){return CAZA.panel.getSize();}
     
     public static ChainChan add(String name, Scene<?,?> scene){
         if(name == null || name.isBlank())System.out.println("invalid name (key).");
@@ -39,6 +45,7 @@ public class Channel {
             if(firstScene){
                 currentScene = scene.registerInputs();
                 titleSwitch(name);
+//                switchScene(name); // can't use this, becaus the remove previous inouts @@!
             }
         }
         return CHAN;
