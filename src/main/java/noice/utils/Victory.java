@@ -23,8 +23,8 @@ public record Victory(float x, float y) implements Comparable<Victory>{
     
     public boolean isGreater(Victory other) { return this.compareTo(other) > 0; }
     public boolean isLlesser(Victory other) { return this.compareTo(other) < 0; }
-    public Victory greater(Victory other) { return this.compareTo(other) > 0 ? this : other; }
-    public Victory lesser(Victory other) { return this.compareTo(other) < 0 ? this : other; }
+    public Victory greater(Victory other)   { return this.compareTo(other) > 0 ? this : other; }
+    public Victory lesser(Victory other)    { return this.compareTo(other) < 0 ? this : other; }
     
     public Victory add(float x, float y){
         return new Victory(this.x + x, this.y + y);
