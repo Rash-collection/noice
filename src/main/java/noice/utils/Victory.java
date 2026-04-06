@@ -13,7 +13,7 @@ import java.awt.Point;
  */
 public record Victory(float x, float y) implements Comparable<Victory>{
     /**The neigh <b>ZERO</b>*/
-    private final static float NOIZE = 1e-6F;
+    public final static float NOIZE = 1e-6F;
     public final static Victory ZERO = new Victory(0F, 0F);
     public Victory{}
     /**copy constructor.*/
@@ -95,14 +95,4 @@ public record Victory(float x, float y) implements Comparable<Victory>{
     @Override public int hashCode(){
         return Float.hashCode(Math.round(x / NOIZE)) * 31 + Float.hashCode(Math.round(y / NOIZE));
     }
-     //just a little TeSt..
-    public static void main(String arg[]){
-        System.out.println(">> " + new Victory(451.45F, 99.455F).scale(3.2F));
-        System.out.println((">> %.7f").formatted(NOIZE));
-        System.out.println(">> " + new Victory(451.45F, 99.455F).scale(3.2F));
-        
-        var a = new Victory(40, 20);
-        var b = a.add(40, 0);
-        System.out.println(">> length(a,b) = " + b.distanceTo(a));
-    }//
 }
