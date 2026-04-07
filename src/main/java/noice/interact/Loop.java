@@ -10,7 +10,6 @@ package noice.interact;
  * @author rash4
  */
 public class Loop implements Runnable{
-    final static double NANOS = 1_000_000_000.0d;
     public Loop(){
         this.running = false;
     }
@@ -35,8 +34,8 @@ public class Loop implements Runnable{
         }
     }
     @Override public void run(){
-        final double timePerFrame = NANOS / 60D; // TEMPO
-        final double timePerUpdate = NANOS / 90D; // TEMPO
+        final double timePerFrame = Channel.PSPS.timePerFrame();
+        final double timePerUpdate = Channel.PSPS.timePerUpdate();
         
         long previousTime = System.nanoTime();
         
@@ -51,15 +50,11 @@ public class Loop implements Runnable{
             deltaF += ((currentTime = System.nanoTime()) - previousTime) / timePerFrame;
             deltaU += (currentTime - previousTime) / timePerUpdate;
             previousTime = currentTime;
-            
-            // for the UPDATE
-            while(deltaU >= 1){// to handle lags XD
+            while(deltaU >= 1){
                 Channel.updating();
                 realUPS++;
                 deltaU--;
             }
-            
-            // for the REPAINT
             if(deltaF >= 1){
                 Channel.repaints();
                 realFPS++;
@@ -67,12 +62,12 @@ public class Loop implements Runnable{
             }
             if(System.currentTimeMillis() - lastCheck >= 1000){
                 lastCheck = System.currentTimeMillis();
+                Channel.PSPS.update(realFPS, realUPS);
                 System.out.println("FPS: " + realFPS + " || UPS: " + realUPS);
-//                config.Setting.PERSONALIZE.setRealFPS(realFPS);
-//                config.Setting.PERSONALIZE.setRealUPS(realUPS);
                 realFPS = realUPS = 0;
             }
-            Thread.yield();
+            Thread.yield(); // unnecessary
+            // these catches for utility-exception catcher!!
         }}catch(Exception ex){
             Loop.this.stops();
             System.out.println(">> Due to Thread-loop exception, the loop has been forcefully STOPPED.");
@@ -81,7 +76,8 @@ public class Loop implements Runnable{
         }catch(Error er){
             System.out.println("> SEVER ERROR :\n\t>>" + er.getMessage());
             er.printStackTrace();
-            Channel.disposeCaza(javax.swing.JFrame.EXIT_ON_CLOSE);// this handles the thread stops() first.
+            // this handles the thread stops() first. (the dispose() method.)
+            Channel.disposeCaza(javax.swing.JFrame.EXIT_ON_CLOSE);
         }
     }
     
