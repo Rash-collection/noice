@@ -5,6 +5,7 @@
 
 package noice.utils;
 
+import java.awt.Dimension;
 import java.awt.Point;
 
 /**
@@ -25,6 +26,10 @@ public record Victory(float x, float y) implements Comparable<Victory>{
     public boolean isLlesser(Victory other) { return this.compareTo(other) < 0; }
     public Victory greater(Victory other)   { return this.compareTo(other) > 0 ? this : other; }
     public Victory lesser(Victory other)    { return this.compareTo(other) < 0 ? this : other; }
+    
+    public Point toPoint(){return new Point((int)this.x, (int)this.y);} 
+    public Dimension toDimension(){return new Dimension((int)this.x, (int)this.y);}
+    
     public Victory min(Victory other) {
         return new Victory(Math.min(this.x, other.x), Math.min(this.y, other.y));
     }
@@ -56,6 +61,11 @@ public record Victory(float x, float y) implements Comparable<Victory>{
     public float distanceTo(Victory neo){
         return this.distanceTo(neo.x, neo.y);
     }
+    public Victory clamp(java.awt.Rectangle rect){
+        float nx = Math.max(rect.x, Math.min(this.x, rect.x + rect.width));
+        float ny = Math.max(rect.y, Math.min(this.y, rect.y + rect.height));
+        return new Victory(nx, ny);
+    }
     // 1️⃣ Clamp by components (explicit bounds)
     public Victory clamp(float minX, float maxX, float minY, float maxY){
         float nx = Math.max(minX, Math.min(this.x, maxX));
@@ -83,7 +93,6 @@ public record Victory(float x, float y) implements Comparable<Victory>{
         if(length <= NOIZE) return ZERO;
         return new Victory(this.x / length, this.y / length);
     }
-    public Point toPoint(){return new Point((int)this.x, (int)this.y);} 
     @Override public String toString(){
         return String.format(("%s(x[%.4f]:y[%.4f])"), this.getClass().getSimpleName(), this.x, this.y);
     }
