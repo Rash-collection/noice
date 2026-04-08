@@ -63,6 +63,9 @@ public class Boundary {
         return this.getBounds().intersects(neo);
     }
     
+    public Victory range(){return this.range;}
+    public Victory center(){return this.center;}
+    
     public Victory getTopLeft(){return this.center.min(this.range);}
     public Victory getBotRight(){return this.center.max(this.range);}
     
