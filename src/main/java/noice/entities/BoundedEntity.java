@@ -3,13 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package entities;
+package noice.entities;
 
 /**
- * Un-Bounded-Entity
- * @see         AbsEntity
- * @see         BoundedEntity
+ * usually extended for event's kinda entity.
  * @author rash4
  */
-public class Item<T extends Item<T>>extends AbsEntity<T>{
+public abstract class BoundedEntity<T extends BoundedEntity<T>> extends AbsEntity<T>
+        implements Boundable{
+    
 }

@@ -2,14 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package entities;
-
-import noice.utils.Boundary;
+package noice.entities;
 
 /**
  *
  * @author rash4
  */
-public interface Boundable {
-    Boundary getBounds();
+@FunctionalInterface
+public interface Viewable {
+    void paint(java.awt.Graphics2D grr, java.awt.Rectangle adjusted);
 }
