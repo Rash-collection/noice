@@ -29,7 +29,7 @@ public class Channel {
     
     final static java.util.Map<String, Scene<?,?>> SCENES = new HashMap<>();
     
-    private static Scene<?,?> currentScene;
+    private static volatile Scene<?,?> currentScene;
     
     public static void stop(){LOOP.stops();}
     public static void start(){LOOP.start();}
@@ -39,11 +39,11 @@ public class Channel {
     
     public static ChainChan add(String name, Scene<?,?> scene){
         if(name == null || name.isBlank())System.out.println("invalid name (key).");
+        synchronized(SCENES){
         final boolean firstScene = SCENES.isEmpty();
         if(scene == null)
             System.out.println("scene is null can't be added to the map 'SCENES'");
-        else synchronized(SCENES){
-            SCENES.putIfAbsent(name, scene);
+        else SCENES.putIfAbsent(name, scene);
             if(firstScene){
                 currentScene = scene.registerInputs();
                 titleSwitch(name);
@@ -85,10 +85,12 @@ public class Channel {
             System.out.println("scene '" + name + "' is not available.");
             return;
         }
-        // dispose (unregister inputs)
-        currentScene.removeInputs();
-        // register new scene's inputs
-        currentScene = neo.registerInputs();
+        synchronized(currentScene){
+            // dispose (unregister inputs)
+            currentScene.removeInputs();
+            // register new scene's inputs
+            currentScene = neo.registerInputs();
+        }
         titleSwitch(name);
     }
     public static void disposeCaza(int operatiOnClose){
