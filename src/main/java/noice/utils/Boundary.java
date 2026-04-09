@@ -111,6 +111,14 @@ public class Boundary {
 
         return new Victory(cx, cy);
     }
+    // nice scaler, for painting objects
+    public Rectangle scale(float scaler){
+        if(Math.abs(scaler - 1F) < 1e-3)return this.getBounds(); // not changing anything.
+        Victory cnt = this.center.scale(scaler),
+                rng = this.range.scale(scaler);
+        return new Boundary(cnt, rng).getBounds();
+    }
+    
     @Override public String toString(){
         return String.format(("%s{center-%s, range-%s}"),
                 this.getClass().getSimpleName(), this.center.toString(), this.range.toString());
