@@ -7,6 +7,7 @@ package noice.interact;
 
 import java.util.HashMap;
 import noice.interact.scenes.Scene;
+import noice.utils.ManageFUps;
 
 /**
  *
@@ -24,6 +25,7 @@ public class Channel {
     final static Visu CAZA = new Visu(BasicStatics.APP_NAME, 760, 600);
     
     private final static Loop LOOP = new Loop();
+    public final static ManageFUps PSPS = new ManageFUps(LOOP);
     
     final static java.util.Map<String, Scene<?,?>> SCENES = new HashMap<>();
     
