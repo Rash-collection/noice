@@ -5,10 +5,10 @@
 
 package noice.interact.scenes;
 
-import entities.Entity;
+import noice.entities.Entity;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.util.List;
 import noice.interact.scenes.functionals.Resizable;
 import noice.interact.scenes.functionals.Scalable;
 import noice.utils.Boundary;
@@ -33,7 +33,7 @@ public class Viewer implements Resizable, Scalable{
     protected Victory getDelta(){
         return this.realView.getTopLeft().sub(this.panelView.x, this.panelView.y);
     }
-    public void painting(java.awt.Graphics2D grr, ArrayList<Entity> entities){
+    public void painting(java.awt.Graphics2D grr, List<Entity<?>> entities){
         if(entities.isEmpty())return;
         final var delta = this.getDelta().toDimension();
         final var onScrn = this.panelView;
