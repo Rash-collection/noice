@@ -9,6 +9,8 @@ import noice.entities.Entity;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import noice.entities.Consumable;
+import noice.entities.Exhaustible;
 import noice.interact.Channel;
 import noice.interact.InputsAdapt;
 import noice.interact.Inpux;
@@ -30,7 +32,7 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
     }
     public SceneManager(int x, int y, int w, int h, SceneAdapter adapt){
         this.setAdapter(adapt);
-        this.inputs = new InputsAdapt<IN>().self();
+        this.inputs = ((IN)new InputsAdapt()).self();
         this.view = new Viewer(x, y, w, h);
     }
     public SceneManager(Rectangle scrnBnds, IN inputs){
@@ -68,8 +70,15 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
     protected T setDefUpdater(){
         return super.setUpdater(crr->{
             synchronized(this.petties){
-                if(!this.petties.isEmpty())for(var elt : this.petties)
-                    elt.updating(crr);
+                for(var elt : this.petties)elt.updating(crr);
+                // the remove check is totally separated from the heavy update-method
+                this.petties.removeIf(ent->{
+                    return switch(ent){
+                        case Consumable cons->cons.consumed();
+                        case Exhaustible exhu->exhu.exhausted(crr);
+                        default ->false;
+                    };
+                });
             }
         });
     }
