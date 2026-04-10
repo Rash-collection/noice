@@ -16,7 +16,6 @@ import java.awt.Rectangle;
 public class Boundary {
     public Victory center, range;
     public Boundary(Victory center, Victory range){
-        if(center.equals(range))throw new IllegalArgumentException("probably not needed check!");
         this.center = center;
         this.range = range;
     }
@@ -66,8 +65,8 @@ public class Boundary {
     public Victory range(){return this.range;}
     public Victory center(){return this.center;}
     
-    public Victory getTopLeft(){return this.center.min(this.range);}
-    public Victory getBotRight(){return this.center.max(this.range);}
+    public Victory getTopLeft(){return this.center.sub(this.range);}
+    public Victory getBotRight(){return this.center.add(this.range);}
     
     public Dimension getSize(){return this.getBotRight().sub(this.getTopLeft()).toDimension();}
     public Rectangle getBounds(){
@@ -108,7 +107,6 @@ public class Boundary {
         // clamp components individually
         float cx = Math.max(tl.x(), Math.min(v.x(), br.x()));
         float cy = Math.max(tl.y(), Math.min(v.y(), br.y()));
-
         return new Victory(cx, cy);
     }
     // nice scaler, for painting objects
