@@ -10,5 +10,6 @@ package noice.entities;
  */
 @FunctionalInterface
 public interface Exhaustible {
-    boolean exhusted();
+    // the condition to remove an entity (based on some countdown)
+    boolean exhausted(int updatesCounter);
 }

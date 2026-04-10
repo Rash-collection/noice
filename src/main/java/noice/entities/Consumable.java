@@ -10,5 +10,6 @@ package noice.entities;
  */
 @FunctionalInterface
 public interface Consumable {
+    // the condition to remove the entity (based on it's resources)
     boolean consumed();
 }
