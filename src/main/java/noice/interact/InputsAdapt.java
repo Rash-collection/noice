@@ -9,5 +9,5 @@ package noice.interact;
  * concrete class of {@link Inpux}
  * @author rash4
  */
-public class InputsAdapt<T extends Inpux<T>> extends Inpux<T>{
+public class InputsAdapt extends Inpux<InputsAdapt>{
 }
