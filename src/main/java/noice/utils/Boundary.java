@@ -22,7 +22,9 @@ public class Boundary {
     public Boundary(float cx, float cy, float rx, float ry){
         this(new Victory(cx, cy), new Victory(rx, ry));
     }
-    
+    public Boundary(Boundary neo){
+        this(neo.center, neo.range);
+    }
     public boolean contains(float x, float y){
         Victory tl = getTopLeft();
         Victory br = getBotRight();
@@ -116,7 +118,12 @@ public class Boundary {
                 rng = this.range.scale(scaler);
         return new Boundary(cnt, rng).getBounds();
     }
-    
+    public boolean scaledCheck(float x, float y, float scale){
+        return new Boundary(this.center, this.range.scale(scale)).contains(x, y);
+    }
+    public Rectangle scaledRect(float scale){
+        return new Boundary(this.center, this.range.scale(scale)).getBounds();
+    }
     @Override public String toString(){
         return String.format(("%s{center-%s, range-%s}"),
                 this.getClass().getSimpleName(), this.center.toString(), this.range.toString());

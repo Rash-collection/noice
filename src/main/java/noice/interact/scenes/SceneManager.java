@@ -49,12 +49,6 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
             return this.petties;
         }
     }
-    protected T setDefPainter(){
-        return super.setPainter(grr->{
-            // synchronized inside this method.
-            this.view.painting(grr, this.petties);
-        });
-    }
     protected void moveView(float deltaX, float deltaY){
         synchronized(this.view){
             this.view.realView.moveBy(deltaX, deltaY);
@@ -64,6 +58,12 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
         synchronized(this.view){
             this.view.realView.moveBy(delta);
         }
+    }
+    protected T setDefPainter(){
+        return super.setPainter(grr->{
+            // synchronized inside this method.
+            this.view.painting(grr, this.petties);
+        });
     }
     protected T setDefUpdater(){
         return super.setUpdater(crr->{

@@ -39,11 +39,8 @@ public class Viewer implements Resizable, Scalable{
         this.some = new Sit(this.realView);
     }
     protected Point getDelta(){
-//        final var cam = this.realView.getTopLeft();
-//        final int dx = (int)((cam.x() * this.scaler) - (float)panelView.x);
-//        final int dy = (int)((cam.y() * this.scaler) - (float)panelView.y);
-//        return new Point(dx, dy);
-        return this.realView.getTopLeft().scale(scaler).sub(this.panelView.x, this.panelView.y).toPoint();
+        return this.realView.getTopLeft().scale(scaler)
+                .sub(this.panelView.x, this.panelView.y).toPoint();
     }
     public void moveScreen(float deltaX, float deltaY){
         this.realView.moveBy(deltaX, deltaY);
@@ -65,7 +62,7 @@ public class Viewer implements Resizable, Scalable{
         grr.setClip(onScrn);
         synchronized(entities){for(var entity : entities){
             final var bnd = entity.getBounds();
-            if(!ofScrn.contains(bnd.center()))continue;
+            if(!ofScrn.intersects(bnd))continue;
             final var scaled = bnd.scale(this.scaler);
             scaled.setLocation(
                     scaled.x - delta.x,
