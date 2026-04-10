@@ -30,7 +30,15 @@ public class Channel {
     final static java.util.Map<String, Scene<?,?>> SCENES = new HashMap<>();
     
     private static volatile Scene<?,?> currentScene;
-    
+    public static void setScaleFactor(float scale){
+        scaleFactor = scale;
+    }
+    public static void addScale(float delta){
+        final float scs = scaleFactor + delta;
+        if(scs <= 500e-3F || scs >= 4)return;
+        scaleFactor = scs;
+        scales();
+    }
     public static void stop(){LOOP.stops();}
     public static void start(){LOOP.start();}
     public static void toggle(){LOOP.toggle();}
@@ -105,6 +113,7 @@ public class Channel {
     public static void scales(){
         // pass the scalling factor
         currentScene.scales(scaleFactor);
+        currentScene.resized(CAZA.panel.getSize());
     }
     public static void updating(){
         if((++incremental) > CEIL)incremental = 0;
