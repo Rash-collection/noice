@@ -49,6 +49,7 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
         this.inputs = inputs;  // scene inputs
         this.view = new Viewer(scrnBounds); // scene view
     }
+    public float getVSCL(){return this.view.scaler;}
     public Viewer getView(){return this.view;}
     public Boundary viewBounds(){return this.view.realView;}
     public Rectangle screenBounds(){return this.view.panelView;}
