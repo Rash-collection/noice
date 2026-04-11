@@ -7,11 +7,11 @@ package debug;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
+import noice.entities.Animatable;
 import noice.entities.Entity;
 import noice.interact.Channel;
 import noice.interact.InputsAdapt;
@@ -24,35 +24,67 @@ import noice.utils.Victory;
  * @author rash4
  */
 public class Display extends SceneManager<Display, InputsAdapt>{
-    private final static int MOV = 0x10;
     private static volatile Display display;
+    private final static int MOV = 0x10;
     private final static String DISPLAY = "Display";
-    private BufferedImage background;
+    
+    
+//    private BufferedImage background;
     private Display(int x, int y, int w, int h){
         super(x, y, w, h);
-        this.background = background();
+//        this.background = background();
         super.setInputs(new Inputs()).setDefAdapter();
     }
     @Override protected final String onInitialize(){
+        this.griddy(99, 99);
         this.setDefAdapter();
-        final var po = super.getPainter();
-        this.setPainter(grr->{
-            final var siz = Channel.size();
-            grr.drawImage(this.background, 0, 0, siz.width, siz.height, null);
-            po.painting(grr);
+        final var ups = super.getUpdater();
+        this.setUpdater(inc->{
+            Display.this.updateInputs();
+            ups.updating(inc);
         });
         return DISPLAY;
     }
+    public Display add(Entity<?> enty){
+        if(enty == null)return this.self();
+        synchronized(this.getPetties()){
+            this.getPetties().add(enty);
+        }
+        return this.self();
+    }
+    private void updateInputs(){
+        
+    }
     private class Inputs extends InputsAdapt{
+        private int longPress = 0;
+        private float move(){
+            final float scl = 1F/Display.this.getVSCL();
+            this.longPress++;
+            if(this.longPress <= 12){
+                return MOV * scl;
+            }else if(this.longPress <= 24){
+                return (MOV * 1.5F) * scl;
+            }else if(this.longPress <= 36){
+                return (MOV * 2.2F) * scl;
+            }else return (MOV * 2.8F) * scl;
+        }
+        @Override public void keyReleased(KeyEvent e){
+            switch(e.getKeyCode()){
+                case KeyEvent.VK_UP, KeyEvent.VK_DOWN,
+                        KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT->
+                    this.longPress = 1;
+                default->{}
+            }
+        }
         @Override public void keyPressed(KeyEvent e){
             switch(e.getKeyCode()){
                 case KeyEvent.VK_ESCAPE->Channel.disposeCaza(3);
+                case KeyEvent.VK_UP     ->Display.this.getView().moveScreen(0, -move());
+                case KeyEvent.VK_DOWN   ->Display.this.getView().moveScreen(0, +move());
+                case KeyEvent.VK_RIGHT  ->Display.this.getView().moveScreen(+move(), 0);
+                case KeyEvent.VK_LEFT   ->Display.this.getView().moveScreen(-move(), 0);
                 case KeyEvent.VK_ADD        ->Channel.addScale(+0.125F);
                 case KeyEvent.VK_SUBTRACT   ->Channel.addScale(-0.125F);
-                case KeyEvent.VK_UP     ->Display.this.getView().moveScreen(0, -MOV);
-                case KeyEvent.VK_DOWN   ->Display.this.getView().moveScreen(0, +MOV);
-                case KeyEvent.VK_RIGHT  ->Display.this.getView().moveScreen(+MOV, 0);
-                case KeyEvent.VK_LEFT   ->Display.this.getView().moveScreen(-MOV, 0);
             }
         }
     }
@@ -68,13 +100,13 @@ public class Display extends SceneManager<Display, InputsAdapt>{
             for(int i = 1; i <= lft; i++){
                 final Victory next;
                 if(i <= top){
-                    next = prv.add(+ety, i%2 == 0?-ety:ety);
+                    next = prv.add(+ety, (i%2 == 0)?-ety:+ety);
                 }else if(i <= rht){
-                    next = prv.add(i%2 == 0?ety:-ety, +ety);
+                    next = prv.add((i%2 == 0)?+ety:-ety, +ety);
                 }else if(i <= bot){
-                    next = prv.add(-ety, i%2 == 0?+ety:-ety);
+                    next = prv.add(-ety, (i%2 == 0)?+ety:-ety);
                 }else{
-                    next = prv.add(i%2 == 0?-ety:ety, -ety);
+                    next = prv.add((i%2 == 0)?-ety:+ety, -ety);
                 }
                 jgdy.lineTo(next.x(), next.y());
                 prv = next;
@@ -85,7 +117,28 @@ public class Display extends SceneManager<Display, InputsAdapt>{
             grr.draw(jgdy);
         });
     }
-    class LocoTity extends Entity<LocoTity>{
+    private void griddy(int cols, int rows){
+        final var img = background();
+        final int len = cols * rows;
+        while(LocoTity.counter < len){
+            final int x = (LocoTity.counter%cols),
+                      y = (LocoTity.counter/cols),
+                      xx = x*LocoTity.WID,
+                      yy = y*LocoTity.HIT;
+            final String nn = String.format(("[%02d:%02d]"), y+1, x+1);
+            final var item = new LocoTity(xx, yy);
+            item.setImage(graphicker.MageCons.printOn(LocoTity.WID, LocoTity.HIT, grr->{
+                grr.drawImage(img, 0, 0, LocoTity.WID, LocoTity.HIT, null);
+                grr.setFont(LocoTity.BAH);
+                grr.drawString(nn, 8, 130);
+            }));
+            this.add(item);
+        }
+    }
+    class LocoTity extends Entity<LocoTity> implements Animatable{
+        private final static Font BAH = new Font(Font.MONOSPACED, Font.BOLD, 16);
+        private static int counter = 0;
+        private final static int WID = 0x100, HIT = 0xA0;
         Boundary bounds;
         BufferedImage sprite;
         LocoTity(int x, int y, int w, int h){
@@ -96,17 +149,25 @@ public class Display extends SceneManager<Display, InputsAdapt>{
             this(x, y, w, h);
             this.sprite = img;
         }
+        LocoTity(int x, int y){
+            this(x, y, WID, HIT);
+            counter++;
+        }
         @Override public Boundary getBounds() {
             return this.bounds;
         }
-        @Override public void paint(Graphics2D grr, Rectangle adjusted) {
-            grr.drawImage(this.sprite, adjusted.x, adjusted.y,
-                    adjusted.width, adjusted.height, null);
-        }
+//        @Override public void paint(Graphics2D grr, Rectangle adjusted) {
+//            grr.drawImage(this.sprite, adjusted.x, adjusted.y,
+//                    adjusted.width, adjusted.height, null);
+//        }
         @Override public void updating(int incremental) {
         }
         void setImage(BufferedImage img){
             this.sprite = img;
+        }
+
+        @Override public BufferedImage currentImage() {
+            return this.sprite;
         }
     }
     public static void deleteDisplay(){
