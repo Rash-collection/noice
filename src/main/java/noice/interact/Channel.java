@@ -18,6 +18,8 @@ public class Channel {
     final static int CEIL = 720720;
     static volatile int incremental = 0;
     
+    private final static Object SCENE_LOCK = new Object();
+    
     static volatile float scaleFactor = 1.0F;
     
     private final static ChainChan CHAN = new ChainChan();
@@ -30,24 +32,26 @@ public class Channel {
     final static java.util.Map<String, Scene<?,?>> SCENES = new HashMap<>();
     
     private static volatile Scene<?,?> currentScene;
+    // tempo method!!
+    public final static java.awt.Dimension size(){return CAZA.panel.getSize();}
+    public final static Object lock(){return SCENE_LOCK;}
+    
     public static void setScaleFactor(float scale){
         scaleFactor = scale;
     }
     public static void addScale(float delta){
         final float scs = scaleFactor + delta;
-        if(scs <= 500e-3F || scs >= 4)return;
+        if(scs <= 125e-3F || scs >= 8)return;
         scaleFactor = scs;
         scales();
     }
     public static void stop(){LOOP.stops();}
     public static void start(){LOOP.start();}
     public static void toggle(){LOOP.toggle();}
-    // tempo method!!
-    public final static java.awt.Dimension size(){return CAZA.panel.getSize();}
     
     public static ChainChan add(String name, Scene<?,?> scene){
         if(name == null || name.isBlank())System.out.println("invalid name (key).");
-        synchronized(SCENES){
+        synchronized(SCENE_LOCK){
         final boolean firstScene = SCENES.isEmpty();
         if(scene == null)
             System.out.println("scene is null can't be added to the map 'SCENES'");
@@ -57,14 +61,13 @@ public class Channel {
                 titleSwitch(name);
 //                switchScene(name); // can't use this, becaus the remove previous inouts @@!
             }
-        }
-        return CHAN;
+        }return CHAN;
     }
     public static ChainChan remove(Scene<?,?> scene){
         if(scene == null) return CHAN;
         if(SCENES.size() < 2 || !SCENES.containsValue(scene))return CHAN;
         final boolean running = LOOP.isRunning();
-        synchronized(SCENES){
+        synchronized(SCENE_LOCK){
             StringBuilder title = new StringBuilder();
             SCENES.entrySet().removeIf(el->{
                 final var elem = el.getValue();
@@ -80,6 +83,21 @@ public class Channel {
             }
         }return CHAN;
     }
+    public static ChainChan remove(String name){
+        final Scene<?,?> target;
+        synchronized(SCENE_LOCK){
+            target = SCENES.get(name);
+        }return remove(target);
+    }
+    public static boolean contains(String name){
+        if(name == null || name.isBlank()) return false;
+        synchronized(SCENES){
+            return SCENES.containsKey(name);
+        }
+    }
+    public static void resize(){
+        resizing(CAZA.panel.getSize());
+    }
     public static void titleSwitch(String title){
         CAZA.frame.setTitle(BasicStatics.APP_NAME + "-" + title);
     }
@@ -93,7 +111,7 @@ public class Channel {
             System.out.println("scene '" + name + "' is not available.");
             return;
         }
-        synchronized(currentScene){
+        synchronized(SCENE_LOCK){
             // dispose (unregister inputs)
             currentScene.removeInputs();
             // register new scene's inputs
@@ -125,6 +143,7 @@ public class Channel {
         CAZA.setPaints(Channel::painting);
         CAZA.setResizing(Channel::resizing);
         CAZA.initialize();
+        resize();
         LOOP.start();
     }
     private static class ChainChan{
@@ -133,6 +152,9 @@ public class Channel {
         }
         public ChainChan remove(Scene<?,?> scene){
             return Channel.remove(scene);
+        }
+        public ChainChan remove(String name){
+            return Channel.remove(name);
         }
     }
 }

@@ -31,6 +31,7 @@ public class Viewer implements Resizable, Scalable{
         final float hlfW = (float)w/2F, hlfH = (float)h/2F;
         this.panelView = new Rectangle(x, y, w, h);
         this.realView = new Boundary(x+hlfW, y+hlfH, hlfW, hlfH);
+        this.some = new Sit(this.realView);
     }
     public Viewer(Rectangle rect){
         final float hlfW = (float)rect.width/2F, hlfH = (float)rect.height/2F;
@@ -56,10 +57,10 @@ public class Viewer implements Resizable, Scalable{
         final var delta = this.getDelta();
         final var onScrn = this.panelView;
         final var ofScrn = this.realView;
-        final var oldC = grr.getClip();
+//        final var oldC = grr.getClip();
         grr.setColor(Color.GREEN);
-        grr.fill(onScrn);
-        grr.setClip(onScrn);
+//        grr.fill(onScrn);
+//        grr.setClip(onScrn);
         synchronized(entities){for(var entity : entities){
             final var bnd = entity.getBounds();
             if(!ofScrn.intersects(bnd))continue;
@@ -69,10 +70,10 @@ public class Viewer implements Resizable, Scalable{
                     scaled.y - delta.y);
             entity.paint(grr, scaled);
         }}
-        grr.setClip(oldC);
-        final var rct = this.some.bounds.scale(this.scaler);
-        rct.setLocation(rct.x - delta.x, rct.y - delta.y);
-        this.some.paint(grr, rct);
+//        grr.setClip(oldC);
+//        final var rct = this.some.bounds.scale(this.scaler);
+//        rct.setLocation(rct.x - delta.x, rct.y - delta.y);
+//        this.some.paint(grr, rct);
         
     }
     @Override public synchronized void resized(Dimension containerSize) {

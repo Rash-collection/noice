@@ -54,6 +54,11 @@ public abstract class Scene<T extends Scene<T, IN>, IN extends Inpux<IN>> extend
     public boolean hasResizer(){return this.resize != null;}
     public boolean hasUpdater(){return this.update != null;}
     
+    protected Scalable  getScaler() {return this.scale;}
+    protected Paintable getPainter(){return this.paint;}
+    protected Updatable getUpdater(){return this.update;}
+    protected Resizable getResizer(){return this.resize;}
+    
     @Override public void painting(Graphics2D grr) {
         this.paint.painting(grr);
     }

@@ -14,6 +14,7 @@ import noice.entities.Exhaustible;
 import noice.interact.Channel;
 import noice.interact.InputsAdapt;
 import noice.interact.Inpux;
+import noice.utils.Boundary;
 import noice.utils.Victory;
 
 /**
@@ -26,9 +27,12 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
     protected final Viewer view;
     private final List<Entity<?>> petties = new ArrayList<>();
     public SceneManager(){
-        // not necessarily needed @@! ..I mean the whole constructor.
         super();
-        this.view = new Viewer(new Rectangle());
+        this.view = new Viewer(new Rectangle(Channel.size()));
+    }
+    public SceneManager(int x, int y, int w, int h){
+        super();
+        this.view = new Viewer(x, y, w, h);
     }
     public SceneManager(int x, int y, int w, int h, SceneAdapter adapt){
         this.setAdapter(adapt);
@@ -46,6 +50,8 @@ public class SceneManager<T extends SceneManager<T, IN>, IN extends Inpux<IN>>
         this.view = new Viewer(scrnBounds); // scene view
     }
     public Viewer getView(){return this.view;}
+    public Boundary viewBounds(){return this.view.realView;}
+    public Rectangle screenBounds(){return this.view.panelView;}
     public List<Entity<?>> getPetties(){
         synchronized(this.petties){
             return this.petties;
