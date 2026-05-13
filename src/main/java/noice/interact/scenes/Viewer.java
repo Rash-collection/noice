@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
+import noice.interact.Channel;
 import noice.interact.scenes.functionals.Resizable;
 import noice.interact.scenes.functionals.Scalable;
 import noice.utils.Boundary;
@@ -76,5 +77,20 @@ public class Viewer implements Resizable, Scalable{
         final float noise = 1e-3F;
         if(scaleFactor <= noise || Math.abs(this.scaler - scaleFactor) < noise)return;
         this.scaler = scaleFactor;
+    }
+    public void zoomAt(Point mouse, boolean positive){
+        if(!this.panelView.contains(mouse)) return;
+        Victory before = screenToWorld(mouse);
+        float scaleFactor = (positive) ? -0.125F : 0.125F;
+        Channel.addScale(scaleFactor);
+        Victory after = screenToWorld(mouse);
+        this.realView.moveBy(before.sub(after));
+    }
+    /**mainly helper method.*/
+    public Victory screenToWorld(Point mouse) {
+        Point delta = getDelta();
+        float worldX = (mouse.x + delta.x) / this.scaler;
+        float worldY = (mouse.y + delta.y) / this.scaler;
+        return new Victory(worldX, worldY);
     }
 }
